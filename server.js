@@ -70,7 +70,23 @@ app.post('/todos', function (req, res) {
 	res.json(body);
 });
 
+//DELETE /todos/:id
 
+app.delete('/todos/:id', function (req, res){
+	var todoID = parseInt(req.params.id, 10);
+	//iterate of todos array. Find the match
+	//var matchedTodo = _.findWhere(todos, {id: todoID});
+	var matchedTodo = _.findWhere(todos, {id: todoID});
+	if (!matchedTodo) {
+		res.status(400).json({"error": "No todo found with that ID"});
+	}
+	else {
+		todos = _.without(todos, matchedTodo);
+		res.json(matchedTodo);
+	}
+	
+
+});
 
 
 
