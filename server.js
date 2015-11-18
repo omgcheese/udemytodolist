@@ -50,7 +50,7 @@ app.post('/todos', function (req, res) {
 	body = _.pick(body, 'completed', 'description');
 
 	if (!_.isBoolean(body.completed) || !_.isString(body.description) || body.description.trim().length === 0) {
-		return res.status(400).send();
+		return res.status(404).send();
 	}
 
 	//set body.description to be trimmed value
@@ -78,7 +78,7 @@ app.delete('/todos/:id', function (req, res){
 	//var matchedTodo = _.findWhere(todos, {id: todoID});
 	var matchedTodo = _.findWhere(todos, {id: todoID});
 	if (!matchedTodo) {
-		res.status(400).json({"error": "No todo found with that ID"});
+		res.status(404).json({"error": "No todo found with that ID"});
 	}
 	else {
 		todos = _.without(todos, matchedTodo);
@@ -87,6 +87,72 @@ app.delete('/todos/:id', function (req, res){
 	
 
 });
+
+//PUT /todos/:id
+
+app.put('/todos/:id', function (req, res) {
+	// var todoID = parseInt(req.params.id, 10);
+	// var matchedTodo = _.findWhere(todos, {id: todoID});
+	// var body = req.body;
+	// if (!matchedTodo) {
+	// 	res.status(400).json({"error": "No todo found with that ID"});
+	// }
+	// else {
+	// 	todos = _.without(todos, matchedTodo);
+
+	// 	body.id = matchedTodo.id;
+	// 	//console.log(req.body);
+
+	// 	body = _.pick(body, 'completed', 'description', 'id');
+
+	// 	if (!_.isBoolean(body.completed) || !_.isString(body.description) || body.description.trim().length === 0) {
+	// 		return res.status(400).send();
+	// 	}
+
+	// 	//set body.description to be trimmed value
+	// 	body.description = body.description.trim();
+
+	// 	todos.push(body);
+	// 	res.json(body);
+
+
+	// }
+
+	var todoID = parseInt(req.params.id, 10);
+	//iterate of todos array. Find the match
+	//var matchedTodo = _.findWhere(todos, {id: todoID});
+	var matchedTodo = _.findWhere(todos, {id: todoID});
+
+	if (!matchedTodo) {
+		return res.status(404).json({"error": "No todo found with that ID"});
+	}
+
+
+	var body = req.body;
+	body = _.pick(body, 'completed', 'description');
+	var validAttributes = {};
+
+	if (body.hasOwnProperty('completed') && _.isBoolean(body.completed)) {
+		validAttributes.completed = body.completed;
+	} 
+	else if (body.hasOwnProperty('completed')) {
+		//bad
+		return res.status(404).send();
+	}
+
+	if (body.hasOwnProperty('description') && _.isString(body.description) && body.description.trim().length > 0) {
+		validAttributes.description = body.description;
+	} 
+	else if (body.hasOwnProperty('description')) {
+		//bad
+		return res.status(404).send();
+	}	
+
+	 //_.extend(matchedTodo, validAttributes);
+	 res.json(_.extend(matchedTodo, validAttributes));
+});
+
+
 
 
 
